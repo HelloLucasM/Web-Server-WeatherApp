@@ -2,16 +2,23 @@
 <html>
     <header>
         <title>Weather</title>
-        <link rel="icon" href=".../public/images/cloud.svg" type="image/svg+xml">
+        <link rel="icon" href="../public/images/cloud.svg" type="image/svg+xml">
         <link rel="stylesheet" href="../public/css/styles.css">
-        <script src="../public/js/app.js"></script>
     </header>
     <body>
         <div class="main-content">
             {{>header}}
             <p>Get your Weather Here</p>
+            <form>
+                <input type="text" placeholder="Location">
+                <button>Search</button>
+            </form>
+            <p id="msgOne"></p>
+            <p id="msgTwo"></p>
+            <p id="msgThree"></p>
         </div>
-         
         {{>footer}}
     </body>
 </html>
+
+<script src="../public/js/app.js"></script>
