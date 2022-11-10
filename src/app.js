@@ -2,21 +2,24 @@ const path = require('path')
 
 const express = require('express')
 const app = express()
+const port = process.env.port || 3000
 
 const hbs = require('hbs')
 
 const {forecast} = require('./utils/forecast')
 const {geolocate} = require('./utils/geolocate')
 
+//Define paths for express config.
 const publicDirectoryPath = path.join(__dirname, '../public')
 const viewsPath = path.join(path.join(__dirname, '../templates/views'))
 const viewPartialsPath = path.join(path.join(__dirname, '../templates/partials'))
 
-
+//Setup handlebars engine and view location.
 app.set('view engine', 'hbs')
 app.set('views', viewsPath)
 hbs.registerPartials(viewPartialsPath)
 
+//Setup static directory to serve.
 app.use("/public", express.static(publicDirectoryPath))
 
 app.get('', (req, res)=>{
@@ -43,36 +46,33 @@ app.get('/about', (req, res)=>{
 app.get('/weather', (req, res)=>{
 
 const _location = req.query.location
-console.log(_location);
-if(!_location){
-    return res.send({
-        error:"¡Provide us a location please!"
-    })
-}
 
-geolocate(_location, (error, {latitud, longitud, location})=>{
-    if(error){
+if(!_location){
         return res.send({
-            error: error
+            error:"¡Provide us a location please!"
         })
     }
 
-    forecast(latitud, longitud, (error, body)=>{
+    geolocate(_location, (error, {latitud, longitud, location} = {})=>{
         if(error){
             return res.send({
-                error: error
+                error
             })
         }
-        return res.send({
-            locationProvided: _location,
-            locationFound: location, 
-            weather: body
+
+        forecast(latitud, longitud, (error, body)=>{
+            if(error){
+                return res.send({
+                    error
+                })
+            }
+            return res.send({
+                locationProvided: _location,
+                locationFound: location, 
+                weather: body
+            })
         })
     })
-})
-
-
-
 })
 
 app.get('/help/*', (req, res)=>{
@@ -89,28 +89,8 @@ app.get('*', (req, res)=>{
     })
 })
 
-app.listen(3000, ()=>{
-    console.log("Server on")
+app.listen(port, ()=>{
+    console.log(`Server is up on port ${port}.`)
 })
 
 
-// const carta = 'bici   coche balón _playstation bici coche peluche  carmel'
- 
-// const gifts = (string)=>{
-//  const arrayGifts = string.split(/\s+/); 
-//  const gifts = {}; 
-//  arrayGifts.forEach(item => {
-//     console.log(item)
-//     if(item.startsWith("_")) return; 
-//     if(Object.hasOwn(gifts, item)){
-//         gifts[item] = gifts[item] + 1; 
-//     }else{
-//         gifts[item] = 1
-//     }
-
-//  });
-// console.log(gifts)
-//  return gifts; 
-// }
-
-// gifts(carta)
